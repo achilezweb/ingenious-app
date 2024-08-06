@@ -1,0 +1,4 @@
+:443, laravel.test
+tls /etc/ssl/private/laravel.test.crt /etc/ssl/private/laravel.test.key
+
+reverse_proxy http://localhost:80
