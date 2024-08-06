@@ -77,15 +77,23 @@ jobs:
             if [ "${{ github.ref }}" == "refs/heads/main" ]; then
               cd ~/public_html/prod001.ingeniousmediallc.com
               git pull origin main
-              composer install --no-dev --optimize-autoloader
+              echo "npm ci"
               npm ci
+              echo "npm run build"
               npm run build
+              echo "composer install --no-dev --optimize-autoloader"
+              composer install --no-dev --optimize-autoloader
+              echo "php artisan migrate --force"
               php artisan migrate --force
             elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
               cd ~/public_html/staging001.ingeniousmediallc.com
               git pull origin staging
-              composer install --no-dev --optimize-autoloader
+              echo "npm ci"
               npm ci
+              echo "npm run build"
               npm run build
+              echo "composer install --no-dev --optimize-autoloader"
+              composer install --no-dev --optimize-autoloader
+              echo "php artisan migrate --force"
               php artisan migrate --force
             fi
