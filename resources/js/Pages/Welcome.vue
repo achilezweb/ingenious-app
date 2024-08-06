@@ -175,10 +175,17 @@ function handleImageError() {
                             </div>
 
                             <div class="pt-3 sm:pt-5">
+<<<<<<< HEAD
                                 <h2 class="text-xl font-semibold text-black dark:text-white">Laracasts5</h2>
 
                                 <p class="mt-4 text-sm/relaxed">
                                     Laracasts5 offers thousands of video tutorials on Laravel, PHP, and JavaScript
+=======
+                                <h2 class="text-xl font-semibold text-black dark:text-white">Laracasts4</h2>
+
+                                <p class="mt-4 text-sm/relaxed">
+                                    Laracasts4 offers thousands of video tutorials on Laravel, PHP, and JavaScript
+>>>>>>> 5e958ad299032ef5195ffb64cdf7c0a56c1d7313
                                     development. Check them out, see for yourself, and massively level up your
                                     development skills in the process.
                                 </p>
