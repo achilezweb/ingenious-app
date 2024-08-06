@@ -20,6 +20,12 @@ jobs:
         with:
           node-version: 16
 
+      - uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql database: laravel-test-db
+          mysql user: laravel_test_user
+          mysql password: example
+
       - name: Copy .env
         run: cp .env.example .env
       - name: Install composer Dependencies
@@ -31,6 +37,7 @@ jobs:
       - name: Setup Project
         run: |
           php artisan config:clear
+          php artisan cache:clear
           php artisan key:generate
           npm run build
 
