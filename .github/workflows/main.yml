@@ -77,6 +77,7 @@ jobs:
             if [ "${{ github.ref }}" == "refs/heads/main" ]; then
               cd ~/public_html/prod001.ingeniousmediallc.com
               git pull origin main
+              nvm use 16
               echo "npm ci"
               npm ci
               echo "npm run build"
@@ -88,6 +89,7 @@ jobs:
             elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
               cd ~/public_html/staging001.ingeniousmediallc.com
               git pull origin staging
+              nvm use 16
               echo "npm ci"
               npm ci
               echo "npm run build"
