@@ -37,7 +37,7 @@ jobs:
       - name: Setup Project
         run: |
           php artisan config:clear
-          php artisan cache:clear
+          php artisan cache:clear || echo "Cache clear failed, continuing..."
           php artisan key:generate
           npm run build
 
