@@ -2,7 +2,10 @@ name: Deploy
 
 on:
   push:
-    branches: [staging]
+    branches:
+      - main
+      - staging
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -10,24 +13,31 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
+
       - uses: actions/checkout@v2
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+
       - name: Copy .env
         run: cp .env.example .env
       - name: Install composer Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
       - name: Install node dependencies
         run: npm ci
+
       - name: Setup Project
         run: |
           php artisan config:clear
           php artisan cache:clear
           php artisan key:generate
           npm run build
+
       - name: Directory Permissions
         run: chmod 755 -R storage bootstrap/cache
+
       - name: Run Unit tests
         env:
           APP_ENV: testing
@@ -36,6 +46,7 @@ jobs:
           DB_PASSWORD: super_secret
           DB_DATABASE: laravel_test_db
         run: php artisan test
+
       - name: Deploy to Server
         if: ${{ success() }}
         uses: appleboy/ssh-action@master
@@ -45,9 +56,18 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script_stop: true
           script: |
-            cd ~/public_html/staging001.ingeniousmediallc.com/
-            git pull origin staging
-            composer i
-            npm ci
-            npm run build
-            php artisan migrate --force
+            if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+              cd ~/public_html/prod001.ingeniousmediallc.com
+              git pull origin main
+              composer install --no-dev --optimize-autoloader
+              npm ci
+              npm run build
+              php artisan migrate --force
+            elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+              cd ~/public_html/staging001.ingeniousmediallc.com
+              git pull origin staging
+              composer install --no-dev --optimize-autoloader
+              npm ci
+              npm run build
+              php artisan migrate --force
+            fi
