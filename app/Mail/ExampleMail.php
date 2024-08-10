@@ -31,7 +31,9 @@ class ExampleMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->customSubject
+            subject: $this->customSubject,
+            // from: ['address' => 'noreply@yourdomain.com', 'name' => 'Your App Name'],
+            // replyTo: ['address' => 'support@yourdomain.com', 'name' => 'Support'],
         );
     }
 
