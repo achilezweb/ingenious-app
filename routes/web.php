@@ -23,7 +23,7 @@ Route::get('/sendemail', function () {
         'body' => 'This is for testing email using Q in Laravel.'
     ];
 
-    $customSubject = 'Your Custom Subject Here via Q001';
+    $customSubject = 'Sent to Queue ' . date("F j, Y, g:i a");
 
     Mail::to('achilez@gmail.com')->queue(new ExampleMail($details, $customSubject));
 
