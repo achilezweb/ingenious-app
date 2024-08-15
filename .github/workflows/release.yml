@@ -1,0 +1,35 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generate release notes
+        id: release_notes
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const { generateNotes } = require('@actions/github')
+            const notes = await generateNotes({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              previous_tag: 'v0.9.0',
+              current_tag: 'v1.0.0'
+            })
+            core.setOutput('notes', notes)
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ${{ steps.release_notes.outputs.notes }}
+          draft: false
+          prerelease: false
