@@ -1,0 +1,90 @@
+name: Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Set up MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql database: laravel_test_db
+          mysql user: laravel_test_user
+          mysql password: example
+          mysql root password: root_password # Ensure this matches your setup
+
+      - name: Copy .env
+        run: cp .env.example .env
+
+      - name: Set up .env
+        run: |
+          echo "DB_CONNECTION=mysql" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_DATABASE=laravel_test_db" >> .env
+          echo "DB_USERNAME=laravel_test_user" >> .env
+          echo "DB_PASSWORD=example" >> .env
+
+      - name: Install composer Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Install node dependencies
+        run: npm ci
+
+      - name: Setup Project
+        run: |
+          php artisan config:clear
+          php artisan cache:clear || echo "Cache clear failed, continuing..."
+          php artisan key:generate
+          npm run build
+
+      - name: Directory Permissions
+        run: chmod 755 -R storage bootstrap/cache
+
+      # - name: Run Unit Tests
+      #   env:
+      #     APP_ENV: testing
+      #     DB_CONNECTION: mysql
+      #     DB_USERNAME: laravel_test_user
+      #     DB_PASSWORD: root_password
+      #     DB_DATABASE: laravel_test_db
+      #   run: php artisan test
+
+      - name: Deploy to Server
+        if: ${{ success() }}
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true
+          script: |
+              cd ~/public_html/staging001.ingeniousmediallc.com
+              git pull origin staging
+              # cp .env.example .env
+              nvm use 16
+              echo "npm ci"
+              npm ci
+              echo "npm run build"
+              npm run build
+              echo "composer install"
+              curl -sS https://getcomposer.org/installer | php
+              php composer.phar install --no-dev --optimize-autoloader
+              #composer install --no-dev --optimize-autoloader
+              echo "php artisan migrate --force"
+              php artisan migrate --force
+              php artisan queue:restart
