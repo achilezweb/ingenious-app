@@ -77,14 +77,16 @@ jobs:
               git pull origin staging
               # cp .env.example .env
               nvm use 16
-              echo "npm ci"
+              echo "Installing: npm ci"
               npm ci
-              echo "npm run build"
+              echo "Building: npm run build"
               npm run build
-              echo "composer install"
+              echo "Install composer install"
               curl -sS https://getcomposer.org/installer | php
               php composer.phar install --no-dev --optimize-autoloader
               #composer install --no-dev --optimize-autoloader
-              echo "php artisan migrate --force"
+              echo "Run Migration: php artisan migrate --force"
               php artisan migrate --force
+              echo "Restarting Queue: php artisan queue:restart"
               php artisan queue:restart
+              echo "Application deployed!"
