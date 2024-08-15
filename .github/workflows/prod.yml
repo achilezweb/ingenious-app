@@ -1,9 +1,9 @@
-name: Staging
+name: Prod
 
 on:
   push:
     branches:
-      - staging
+      - main
 
 jobs:
   deploy:
@@ -73,8 +73,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script_stop: true
           script: |
-              cd ~/public_html/staging001.ingeniousmediallc.com
-              git pull origin staging
+              cd ~/public_html/prod001.ingeniousmediallc.com
+              git pull origin main
               # cp .env.example .env
               nvm use 16
               echo "npm ci"
