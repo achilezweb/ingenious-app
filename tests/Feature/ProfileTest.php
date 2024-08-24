@@ -81,5 +81,5 @@ test('correct password must be provided to delete account', function () {
         ->assertSessionHasErrors('password')
         ->assertRedirect('/profile');
 
-    $this->assertNull($user->fresh());
+    $this->assertNotNull($user->fresh());
 });
